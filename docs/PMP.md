@@ -19,19 +19,16 @@
 
 ### Project and Jira Setup
 
-**Project in one sentence:**  
-**Jira project key:**  
-**Jira board link:**  
+**Project in one sentence:** A web-based decision support platform where parents and specialists share one weekly schedule, task list and record of observations, with an AI summary that supports but never makes decisions.  
+**Jira project key:** G4  
+**Jira board link:** https://student-team-w5ttem13.atlassian.net/jira/software/projects/G4/boards/1  
 
 ### Team and Roles
 
 | Name | Jira / GitHub username | Role |
 |---|---|---|
-| | | |
-| | | |
-| | | |
-| | | |
-| | | |
+| Selin Nur Seviş | c2328048@student.cankaya.edu.tr / selinsevis | Team lead & contact person, full-stack developer, Jira & PMP owner |
+| Göktuğ Eskigöçmen | c202328025@student.cankaya.edu.tr / gokenomi | Full-stack developer, CI & testing owner |
 
 ---
 
