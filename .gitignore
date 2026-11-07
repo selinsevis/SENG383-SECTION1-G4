@@ -147,3 +147,15 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Project-specific
+# SQLite database files (created by the seed script)
+*.sqlite
+*.sqlite3
+*.db
+# Uploaded documents (M6)
+server/uploads/
+# Playwright test output
+test-results/
+playwright-report/
+playwright/.cache/
