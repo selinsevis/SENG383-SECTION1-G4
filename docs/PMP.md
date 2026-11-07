@@ -46,7 +46,7 @@
 | PMP-4 | Selin Nur Seviş | 1 | Sprint 3 |
 | PMP-5 | Selin Nur Seviş | 1 | Sprint 4 |
 | PMP-6 | Selin Nur Seviş | 1 | Sprint 4 |
-| M1 | Selin Nur Seviş | 7 | Sprint 1, 2, 4 |
+| M1 | Selin Nur Seviş | 8 | Sprint 1, 2, 4 |
 | M2 | Selin Nur Seviş | 3 | Sprint 2, 4 |
 | M3 | Göktuğ Eskigöçmen | 3 | Sprint 2, 4 |
 | M4 | Göktuğ Eskigöçmen | 3 | Sprint 2, 4 |
@@ -55,7 +55,7 @@
 | M7 | Göktuğ Eskigöçmen | 3 | Sprint 3, 4 |
 | M8 | Selin Nur Seviş | 3 | Sprint 3, 4 |
 
-M1 also holds the Sprint 1 setup tasks: SDD first version (G4-20), the walking skeleton (G4-21 backend, G4-22 frontend) and the README (G4-56).
+M1 also holds the Sprint 1 setup tasks: SRS first version (G4-57), SDD first version (G4-20), the walking skeleton (G4-21 backend, G4-22 frontend) and the README (G4-56).
 Each module epic has its API and UI tasks in its development sprint, and its end-to-end test task in Sprint 4.
 
 ### Sprint Plan
