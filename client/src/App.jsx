@@ -1,31 +1,36 @@
 import { useEffect, useState } from 'react';
 
-// Walking skeleton: the page asks the backend for its health status.
-// If the backend and the database answer, the whole chain (React -> Express -> SQLite) works.
+// Walking skeleton: React asks the backend for the tasks, Express reads them from SQLite,
+// and the tasks appear in the browser. This shows the whole chain works end to end.
 export default function App() {
-  const [health, setHealth] = useState(null);
+  const [tasks, setTasks] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('/api/health')
+    fetch('/api/tasks')
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
-      .then(setHealth)
+      .then(setTasks)
       .catch((err) => setError(err.message));
   }, []);
 
   return (
     <main>
       <h1>Child Development Platform</h1>
-      <p>Walking skeleton (v0.0)</p>
-      {error && <p role="alert">Backend not reachable: {error}</p>}
-      {!error && !health && <p>Checking backend…</p>}
-      {health && (
-        <p>
-          Backend: {health.status} · Database: {health.db}
-        </p>
+      <p>Walking skeleton (v0.0): tasks below come from the database.</p>
+      {error && <p role="alert">Could not load tasks: {error}</p>}
+      {!error && !tasks && <p>Loading tasks…</p>}
+      {tasks && tasks.length === 0 && <p>No tasks in the database.</p>}
+      {tasks && tasks.length > 0 && (
+        <ul>
+          {tasks.map((task) => (
+            <li key={task.id}>
+              {task.title} – {task.status}
+            </li>
+          ))}
+        </ul>
       )}
     </main>
   );
