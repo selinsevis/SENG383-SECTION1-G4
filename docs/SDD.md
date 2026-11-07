@@ -2,7 +2,7 @@
 
 **Team name:** G4 (SENG383-SECTION1-G4)  
 **Version:** ☒ First version (Week 6) ☐ Final (Week 10)  
-**Last updated:** 2026-11-01
+**Last updated:** 2026-11-07
 
 ---
 
@@ -248,16 +248,34 @@ sequenceDiagram
 
 ## 6. User Interface
 
-We follow the example screens in Appendix A of the assignment. Wireframes will be added in the final version.
+Low-fidelity wireframes of the main screens. They show only the required functionality (M1–M8); the final look may change during development.
 
 | Screen | Image | Module |
 |---|---|---|
-| Login | `docs/img/` (final version) | M1 |
-| Parent dashboard (schedule, tasks, entries, statistics, AI summary) | `docs/img/` (final version) | M3, M4, M5, M7, M8 |
-| Linked specialists | `docs/img/` (final version) | M2 |
-| Documents | `docs/img/` (final version) | M6 |
-| Specialist: child profile and new entry | `docs/img/` (final version) | M4, M5, M6, M8 |
-| Child: my tasks | `docs/img/` (final version) | M3, M4 |
+| Login | [wireframe-login.png](img/wireframe-login.png) | M1 |
+| Parent dashboard (schedule, tasks, entries, statistics, AI summary) | [wireframe-parent-dashboard.png](img/wireframe-parent-dashboard.png) | M3, M4, M5, M7, M8 |
+| Linked specialists | [wireframe-linked-specialists.png](img/wireframe-linked-specialists.png) | M2 |
+| Documents | [wireframe-documents.png](img/wireframe-documents.png) | M6 |
+| Specialist: child profile and new entry | [wireframe-specialist-child-profile.png](img/wireframe-specialist-child-profile.png) | M2, M4, M5, M6, M8 |
+| Child: my tasks | [wireframe-child-tasks.png](img/wireframe-child-tasks.png) | M1, M3, M4 |
+
+### Login
+![Login](img/wireframe-login.png)
+
+### Parent dashboard
+![Parent dashboard](img/wireframe-parent-dashboard.png)
+
+### Linked specialists
+![Linked specialists](img/wireframe-linked-specialists.png)
+
+### Documents
+![Documents](img/wireframe-documents.png)
+
+### Specialist: child profile and new entry
+![Specialist child profile](img/wireframe-specialist-child-profile.png)
+
+### Child: my tasks
+![Child tasks](img/wireframe-child-tasks.png)
 
 ---
 
@@ -266,3 +284,4 @@ We follow the example screens in Appendix A of the assignment. Wireframes will b
 | Date | Change | By |
 |---|---|---|
 | 2026-11-01 | First version | Selin Nur Seviş |
+| 2026-11-07 | Added wireframes of the main screens (Section 6) | Selin Nur Seviş |
