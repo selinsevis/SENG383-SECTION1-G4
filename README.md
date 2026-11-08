@@ -44,7 +44,32 @@ Requirements: Node.js 20 or later.
 
 ### Backend (Express + SQLite)
 
-Setup steps will be added with the backend walking skeleton (G4-21). The backend runs at http://localhost:3000.
+From the repository root, run:
+
+```bash
+cd server
+npm ci
+npm run seed
+npm start
+```
+
+The backend runs at http://localhost:3000. The seed script creates
+`server/data/development.sqlite` and inserts a synthetic sample task. It can be
+run again without duplicating the sample or resetting existing tasks. Database
+files are ignored by Git. Set `DB_PATH` to use a different SQLite file if needed.
+
+Check http://localhost:3000/api/tasks (or run `curl http://localhost:3000/api/tasks`):
+
+```json
+[{ "id": 1, "title": "Read for 20 minutes", "status": "open" }]
+```
+
+This v0.0 endpoint serves synthetic demo data without login; JWT and access
+control are planned for M1. If startup reports that the database is not ready,
+run `npm run seed`. Stop the backend with Ctrl+C.
+
+Run the backend database and API tests with `cd server && npm test` from the
+repository root. Tests use temporary databases, leaving development data intact.
 
 ### Frontend (React + Vite)
 
@@ -55,6 +80,11 @@ npm run dev
 ```
 
 The page opens at http://localhost:5173. Requests to `/api` are forwarded to the backend at http://localhost:3000, so start the backend first.
+
+Use a second terminal for the frontend. The page must show
+**Read for 20 minutes – open** with no loading error. This verifies the complete
+React → Express → SQLite walking skeleton. Run `npm run build` in `client/` to
+verify the frontend production build.
 
 ## How we work
 
