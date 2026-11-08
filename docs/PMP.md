@@ -40,14 +40,23 @@
 
 | Epic | Owner | Number of tasks | Planned sprint(s) |
 |---|---|---|---|
-| M1 | | | |
-| M2 | | | |
-| M3 | | | |
-| M4 | | | |
-| M5 | | | |
-| M6 | | | |
-| M7 | | | |
-| M8 | | | |
+| PMP-1 | Selin Nur Seviş | 0 (done before Sprint 1) | – |
+| PMP-2 | Selin Nur Seviş | 1 | Sprint 1 |
+| PMP-3 | Selin Nur Seviş | 1 | Sprint 2 |
+| PMP-4 | Selin Nur Seviş | 1 | Sprint 3 |
+| PMP-5 | Selin Nur Seviş | 1 | Sprint 4 |
+| PMP-6 | Selin Nur Seviş | 1 | Sprint 4 |
+| M1 | Selin Nur Seviş | 8 | Sprint 1, 2, 4 |
+| M2 | Selin Nur Seviş | 3 | Sprint 2, 4 |
+| M3 | Göktuğ Eskigöçmen | 3 | Sprint 2, 4 |
+| M4 | Göktuğ Eskigöçmen | 3 | Sprint 2, 4 |
+| M5 | Selin Nur Seviş | 3 | Sprint 3, 4 |
+| M6 | Göktuğ Eskigöçmen | 3 | Sprint 3, 4 |
+| M7 | Göktuğ Eskigöçmen | 3 | Sprint 3, 4 |
+| M8 | Selin Nur Seviş | 3 | Sprint 3, 4 |
+
+M1 also holds the Sprint 1 setup tasks: SRS first version (G4-57), SDD first version (G4-20), the walking skeleton (G4-21 backend, G4-22 frontend) and the README (G4-56).
+Each module epic has its API and UI tasks in its development sprint, and its end-to-end test task in Sprint 4.
 
 ### Sprint Plan
 
@@ -55,10 +64,10 @@
 
 | Sprint | Weeks | Sprint goal | Ends with |
 |---|---|---|---|
-| Sprint 1 | | | Walking skeleton (v0.0), Week 6 |
-| Sprint 2 | | | Release v0.1, mid-term |
-| Sprint 3 | | | Release v0.2, Week 10 |
-| Sprint 4 | | | Release v1.0, final |
+| Sprint 1 | Week 6 (2–8 Nov) | SDD first version, PMP-2, walking skeleton (v0.0) | Walking skeleton (v0.0), Week 6 |
+| Sprint 2 | Weeks 7–8 (9–22 Nov) | M1–M4 and PMP-3, release v0.1 | Release v0.1, mid-term |
+| Sprint 3 | Weeks 9–10 (23 Nov–6 Dec) | M5–M8 and PMP-4, release v0.2 | Release v0.2, Week 10 |
+| Sprint 4 | Weeks 11–12 (7–20 Dec) | End-to-end tests for M1–M8, coverage, PMP-5 and PMP-6 | Release v1.0, final |
 
 ---
 
