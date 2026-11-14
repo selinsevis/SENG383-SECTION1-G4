@@ -73,14 +73,39 @@ Each module epic has its API and UI tasks in its development sprint, and its end
 
 ## PMP-3. Progress Review: Mid-term (v0.1)
 
-**Jira board screenshot:**  
+**Date of review:** 2026-11-15 (end of Week 7, middle of Sprint 2)
+
+**Jira board screenshot:**
+
+![Jira board at the end of Week 7](img/pmp3-jira-board.png)
 
 | Epic | Planned for this point | Status (Done / In progress / Not started) |
 |---|---|---|
-| | | |
-| | | |
+| PMP-1 | Project, Jira setup, team and roles | Done |
+| PMP-2 | Work packages and sprint plan | Done |
+| PMP-3 | Progress review at the end of Week 7 | In progress (this section) |
+| M1 | Sprint 1: SRS, SDD, walking skeleton (v0.0), README · Sprint 2: login API with JWT (G4-23), login page and role routing (G4-24) | In progress: Sprint 1 tasks done and `v0.0` tagged; login API in review; login page not started |
+| M2 | Link/unlink API with access check (G4-25), linked specialists page (G4-26) | Not started |
+| M3 | Events API (G4-27), weekly schedule view (G4-33) | Not started |
+| M4 | Tasks API (G4-34), assign task form and child task list (G4-35) | Not started |
+
+**Work completed since PMP-2**
+
+- Walking skeleton finished and tagged `v0.0`: SQLite → Express (`GET /api/tasks`) → React page (PRs #5, #8).
+- README with setup steps, and `.gitignore` for database files, uploads and test output (PR #7).
+- GitHub Actions workflow that installs, seeds, runs the backend tests and builds the frontend on every pull request.
+- M1 login API (G4-23): synthetic demo users, hashed passwords, `POST /api/auth/login`, `GET /api/auth/me`, `authenticate` and `requireRole` middleware, with API tests.
+
+**Remaining work in Sprint 2 (Week 8)**
+
+M1 login page and role routing, M2, M3, M4, the first end-to-end test running in CI, and release `v0.1` for the mid-term demo.
 
 **Changes to the plan (if any):**
+
+- The final course schedule (announcement of 12 October) places PMP-3 in Week 7, PMP-4 at the mid-term in Week 8, PMP-5 in Week 10 and PMP-6 in Week 11. We moved the PMP-4 task (G4-45) to Sprint 2 and the PMP-5 task (G4-54) to Sprint 3; PMP-6 stays in Sprint 4.
+- Two tasks were added to Sprint 1 after PMP-1: README (G4-56) and SRS first version (G4-57). Both are done.
+- The collaboration with senior (SENG 440) students was cancelled by the instructor, so there is no separate test team. We hold a weekly team meeting instead and commit the notes to `docs/meetings/`.
+- M2–M4 have not started yet, so most of Sprint 2 is concentrated in Week 8. To protect the mid-term demo, we will build the backend of M2 and M4 first, because the end-to-end test and the demo flow depend on them.
 
 ---
 

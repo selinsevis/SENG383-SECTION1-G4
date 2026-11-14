@@ -1,5 +1,6 @@
 const express = require('express');
-const { createAuthRouter } = require('./auth');
+const { createAuthRouter, authenticate } = require('./auth');
+const { createChildrenRouter } = require('./children');
 
 function createApp(db, { jwtSecret } = {}) {
   if (!jwtSecret) throw new Error('createApp needs a jwtSecret');
@@ -9,6 +10,8 @@ function createApp(db, { jwtSecret } = {}) {
   app.use(express.json());
 
   app.use('/api/auth', createAuthRouter(db, jwtSecret));
+  // Everything about a child needs a logged-in user (M2).
+  app.use('/api/children', authenticate(db, jwtSecret), createChildrenRouter(db));
 
   // v0.0 walking skeleton endpoint with synthetic data. It is replaced by the
   // protected task API in M4, so it stays open for now.

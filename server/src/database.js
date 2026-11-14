@@ -38,6 +38,22 @@ function seedDatabase(db) {
       role TEXT NOT NULL CHECK (role IN ('parent', 'specialist', 'child')),
       specialist_type TEXT
     )`);
+    // M2: a child belongs to one parent and has its own login account (user_id).
+    db.exec(`CREATE TABLE IF NOT EXISTS children (
+      id INTEGER PRIMARY KEY,
+      parent_id INTEGER NOT NULL REFERENCES users(id),
+      user_id INTEGER UNIQUE REFERENCES users(id),
+      name TEXT NOT NULL
+    )`);
+    // M2: which specialists are linked to which child. Unlinking deletes the row.
+    db.exec(`CREATE TABLE IF NOT EXISTS specialist_links (
+      id INTEGER PRIMARY KEY,
+      child_id INTEGER NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+      specialist_id INTEGER NOT NULL REFERENCES users(id),
+      specialist_type TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE (child_id, specialist_id)
+    )`);
 
     // Re-running seed must not duplicate rows or overwrite existing ones.
     db.prepare('INSERT OR IGNORE INTO tasks (id, title, status) VALUES (?, ?, ?)')
@@ -49,6 +65,13 @@ function seedDatabase(db) {
     for (const u of DEMO_USERS) {
       insertUser.run(u.id, u.name, u.email, passwordHash, u.role, u.specialistType);
     }
+
+    // One synthetic child (the parent's child, with the child login), linked to the teacher.
+    // The psychologist is registered but not linked, so linking can be shown in the demo.
+    db.prepare('INSERT OR IGNORE INTO children (id, parent_id, user_id, name) VALUES (?, ?, ?, ?)')
+      .run(1, 1, 4, 'Can Demo');
+    db.prepare(`INSERT OR IGNORE INTO specialist_links (child_id, specialist_id, specialist_type)
+      VALUES (?, ?, ?)`).run(1, 2, 'teacher');
   })();
 }
 
