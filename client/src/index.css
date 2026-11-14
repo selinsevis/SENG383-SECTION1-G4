@@ -1,0 +1,24 @@
+body { font-family: system-ui, sans-serif; margin: 0; background: #f6f7f9; color: #1f2328; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+.login { max-width: 360px; }
+form { display: grid; gap: 12px; }
+label { display: grid; gap: 4px; font-size: 14px; }
+input { padding: 8px; font-size: 15px; border: 1px solid #c8ccd2; border-radius: 6px; }
+button { padding: 8px 14px; font-size: 15px; border: 0; border-radius: 6px; background: #2f6feb; color: #fff; cursor: pointer; }
+button:disabled { opacity: 0.6; cursor: default; }
+.error { color: #b42318; margin: 0; }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid #d8dbe0; }
+.topbar button { margin-left: 12px; background: #57606a; }
+h2 { font-size: 18px; margin: 0 0 12px; }
+.child-name { margin-top: 24px; }
+.card { background: #fff; border: 1px solid #d8dbe0; border-radius: 8px; padding: 16px; margin-top: 12px; }
+.inline-form { grid-template-columns: 1fr 220px auto; align-items: end; margin-bottom: 12px; }
+select { padding: 8px; font-size: 15px; border: 1px solid #c8ccd2; border-radius: 6px; background: #fff; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 8px; border-top: 1px solid #eaecef; }
+.actions { display: flex; gap: 8px; align-items: center; justify-content: flex-end; }
+button.secondary { background: #eaeef2; color: #1f2328; }
+button.danger { background: #cf222e; }
+.success { color: #1a7f37; margin: 0 0 12px; }
+.list li { padding: 6px 0; }
+@media (max-width: 640px) { .inline-form { grid-template-columns: 1fr; } }
