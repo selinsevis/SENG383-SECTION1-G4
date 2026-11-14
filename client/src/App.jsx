@@ -1,37 +1,22 @@
-import { useEffect, useState } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './auth.jsx';
+import RequireRole from './RequireRole.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import { ChildHome, ParentHome, SpecialistHome } from './pages/RoleHomes.jsx';
 
-// Walking skeleton: React asks the backend for the tasks, Express reads them from SQLite,
-// and the tasks appear in the browser. This shows the whole chain works end to end.
 export default function App() {
-  const [tasks, setTasks] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetch('/api/tasks')
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then(setTasks)
-      .catch((err) => setError(err.message));
-  }, []);
-
   return (
-    <main>
-      <h1>Child Development Platform</h1>
-      <p>Walking skeleton (v0.0): tasks below come from the database.</p>
-      {error && <p role="alert">Could not load tasks: {error}</p>}
-      {!error && !tasks && <p>Loading tasks…</p>}
-      {tasks && tasks.length === 0 && <p>No tasks in the database.</p>}
-      {tasks && tasks.length > 0 && (
-        <ul>
-          {tasks.map((task) => (
-            <li key={task.id}>
-              {task.title} – {task.status}
-            </li>
-          ))}
-        </ul>
-      )}
-    </main>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/parent" element={<RequireRole role="parent"><ParentHome /></RequireRole>} />
+          <Route path="/specialist" element={<RequireRole role="specialist"><SpecialistHome /></RequireRole>} />
+          <Route path="/child" element={<RequireRole role="child"><ChildHome /></RequireRole>} />
+          {/* Any other address: the login page sends logged-in users to their own start page. */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
