@@ -64,9 +64,47 @@ Check http://localhost:3000/api/tasks (or run `curl http://localhost:3000/api/ta
 [{ "id": 1, "title": "Read for 20 minutes", "status": "open" }]
 ```
 
-This v0.0 endpoint serves synthetic demo data without login; JWT and access
-control are planned for M1. If startup reports that the database is not ready,
+This v0.0 endpoint serves synthetic demo data without login; it is replaced by
+the protected task API in M4. If startup reports that the database is not ready,
 run `npm run seed`. Stop the backend with Ctrl+C.
+
+#### Login (M1)
+
+The seed script also creates synthetic demo accounts. All of them use the
+password `Demo1234!`:
+
+| Email | Role |
+|---|---|
+| `parent@demo.test` | parent |
+| `teacher@demo.test` | specialist (teacher) |
+| `psychologist@demo.test` | specialist (psychologist) |
+| `child@demo.test` | child |
+
+`POST /api/auth/login` with `{ "email": "...", "password": "..." }` returns a
+JWT and the user's role. Send the token as `Authorization: Bearer <token>`;
+`GET /api/auth/me` returns the logged-in user.
+
+#### Children and linked specialists (M2)
+
+The seed also creates one synthetic child, **Can Demo**, who belongs to
+`parent@demo.test`, logs in as `child@demo.test`, and is linked to
+`teacher@demo.test`. `psychologist@demo.test` is registered but not linked, so
+the parent can link and unlink it.
+
+| Method | Endpoint | Who |
+|---|---|---|
+| GET | `/api/children` | children the user may see |
+| GET | `/api/children/:childId/specialists` | parent, linked specialist |
+| POST | `/api/children/:childId/specialists` `{ email, specialistType }` | parent |
+| DELETE | `/api/children/:childId/specialists/:specialistId` | parent |
+
+A specialist who is not linked to a child gets `403` for every request about
+that child, even with a valid token. Other modules protect their child routes
+with the same `canAccessChild` middleware (`server/src/children.js`).
+
+To set your own JWT secret, copy `server/.env.example` to `server/.env` and fill
+in `JWT_SECRET`. Without it, the backend uses a development-only secret and
+prints a warning.
 
 Run the backend database and API tests with `cd server && npm test` from the
 repository root. Tests use temporary databases, leaving development data intact.
@@ -81,10 +119,11 @@ npm run dev
 
 The page opens at http://localhost:5173. Requests to `/api` are forwarded to the backend at http://localhost:3000, so start the backend first.
 
-Use a second terminal for the frontend. The page must show
-**Read for 20 minutes – open** with no loading error. This verifies the complete
-React → Express → SQLite walking skeleton. Run `npm run build` in `client/` to
-verify the frontend production build.
+Use a second terminal for the frontend. Open http://localhost:5173, log in with
+one of the demo accounts above (password `Demo1234!`), and you are taken to the
+start page of that role: `/parent`, `/specialist` or `/child`. A user who opens
+another role's page is sent back to their own page. Run `npm run build` in
+`client/` to verify the frontend production build.
 
 ## How we work
 
