@@ -10,5 +10,9 @@ export default function useChildren() {
     apiFetch('/api/children').then(setChildren).catch((err) => setError(err.message));
   }, []);
 
-  return { children, error };
+  function addChild(child) {
+    setChildren((current) => [...(current || []), child].sort((a, b) => a.name.localeCompare(b.name)));
+    setError(null);
+  }
+  return { children, error, addChild };
 }

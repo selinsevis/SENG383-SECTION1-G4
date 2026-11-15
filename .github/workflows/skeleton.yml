@@ -20,6 +20,7 @@ jobs:
           cache-dependency-path: |
             server/package-lock.json
             client/package-lock.json
+            e2e/package-lock.json
       - name: Install backend
         run: npm ci
         working-directory: server
@@ -27,7 +28,7 @@ jobs:
         run: npm run seed
         working-directory: server
       - name: Database and API tests
-        run: npm test
+        run: npm run test:coverage
         working-directory: server
       - name: Install frontend
         run: npm ci
@@ -35,3 +36,22 @@ jobs:
       - name: Build frontend
         run: npm run build
         working-directory: client
+      - name: Frontend unit tests
+        run: npm test
+        working-directory: client
+      - name: Install E2E dependencies and Chromium
+        run: npm ci && npx playwright install --with-deps chromium
+        working-directory: e2e
+      - name: End-to-end tests
+        run: npm test
+        working-directory: e2e
+        env:
+          CI: true
+          AI_MODE: mock
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: |
+            e2e/playwright-report/
+            e2e/test-results/

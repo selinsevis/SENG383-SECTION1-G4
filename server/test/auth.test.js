@@ -110,6 +110,6 @@ describe('requireRole middleware', () => {
 test('seed is repeatable and stores only password hashes', () => {
   seedDatabase(db);
   const users = db.prepare('SELECT email, password_hash FROM users ORDER BY id').all();
-  expect(users).toHaveLength(4);
+  expect(users).toHaveLength(5);
   for (const u of users) expect(u.password_hash).not.toBe(DEMO_PASSWORD);
 });

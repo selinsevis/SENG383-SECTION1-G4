@@ -2,7 +2,7 @@
 
 **Team name:** G4 (SENG383-SECTION1-G4)  
 **Version:** ☒ First version (Week 6) ☐ Final (Week 10)  
-**Last updated:** 2026-10-31
+**Last updated:** 2026-11-15
 
 ---
 
@@ -43,6 +43,7 @@ A child's development is followed by parents and several specialists who each ke
 | FR-M2-04 | The system shall allow a parent to unlink a specialist after a confirmation step. | Must |
 | FR-M2-05 | The API shall return HTTP 403 for every request a specialist makes about a child they are not linked to. | Must |
 | FR-M2-06 | The system shall show a specialist the list of children they are linked to. | Must |
+| FR-M2-07 | The system shall allow a parent to add a child profile with first name, last name, unique email and password, owned by the authenticated parent. The child login account and profile are created atomically. | Should |
 
 ### M3 – Weekly schedule
 
@@ -60,6 +61,7 @@ A child's development is followed by parents and several specialists who each ke
 | FR-M4-02 | The system shall show the child only their own tasks. | Must |
 | FR-M4-03 | The system shall allow the child to mark a task as done. | Must |
 | FR-M4-04 | The system shall show the assigner the status (open / done) of the tasks they assigned. | Must |
+| FR-M4-05 | The system shall allow the owning child to undo task completion and return it to open, clearing the completion timestamp. | Should |
 
 ### M5 – Specialist entries
 
@@ -69,6 +71,8 @@ A child's development is followed by parents and several specialists who each ke
 | FR-M5-02 | The system shall allow the author to edit their entry and shall mark an edited entry as "edited". | Must |
 | FR-M5-03 | The system shall show entries to the parent and linked specialists. | Must |
 | FR-M5-04 | The system shall not show entries to the child, in the UI or through the API. | Must |
+| FR-M5-05 | Parents and linked specialists shall be able to select an ISO year and week to read that child's evaluations. | Should |
+| FR-M5-06 | A linked specialist shall be able to select a child, ISO year and week, and create or edit their own evaluation for that week. One evaluation per specialist, child and week is allowed. | Should |
 
 ### M6 – Documents
 
@@ -98,6 +102,7 @@ A child's development is followed by parents and several specialists who each ke
 | FR-M8-05 | The system shall send the AI only data the reader is allowed to see. | Must |
 | FR-M8-06 | The AI summary shall not make decisions or suggest a diagnosis or treatment. | Must |
 | FR-M8-07 | The system shall provide a mock AI mode that returns a fixed summary, used in tests and CI. | Must |
+| FR-M8-08 | Parents and linked specialists shall be able to mark their summary helpful or incorrect. | Must |
 
 ---
 

@@ -107,8 +107,8 @@ describe('POST /api/children/:childId/specialists', () => {
   });
 
   test('a parent cannot link specialists to another parent\'s child', async () => {
-    db.prepare("INSERT INTO users (id, name, email, password_hash, role) VALUES (5, 'Other', 'other@demo.test', 'x', 'parent')").run();
-    db.prepare("INSERT INTO children (id, parent_id, name) VALUES (2, 5, 'Other child')").run();
+    db.prepare("INSERT INTO users (id, name, email, password_hash, role) VALUES (50, 'Other', 'other@demo.test', 'x', 'parent')").run();
+    db.prepare("INSERT INTO children (id, parent_id, name) VALUES (2, 50, 'Other child')").run();
     await request(app).post('/api/children/2/specialists').set(auth(await tokenFor('parent@demo.test')))
       .send({ email: 'psychologist@demo.test', specialistType: 'psychologist' }).expect(403);
   });
@@ -147,4 +147,46 @@ test('canAccessChild can protect any child route (used by M3–M8)', async () =>
     .set(auth(await tokenFor('psychologist@demo.test'))).expect(403);
   await request(testApp).get('/children/abc/anything')
     .set(auth(await tokenFor('parent@demo.test'))).expect(404);
+});
+
+describe('parent provisions a child login', () => {
+  const details = { firstName: 'Deniz', lastName: 'Demo', email: ' Deniz@demo.test ', password: 'ChildDemo123!' };
+  test('creates a hashed child account that logs in and sees only its own profile', async () => {
+    const parent = await tokenFor('parent@demo.test');
+    const created = await request(app).post('/api/children').set(auth(parent))
+      .send({ ...details, role: 'admin', parent_id: 999, user_id: 4 }).expect(201);
+    const user = db.prepare('SELECT * FROM users WHERE email = ?').get('deniz@demo.test');
+    expect(user.role).toBe('child');
+    expect(user.password_hash).not.toBe(details.password);
+    expect(require('bcryptjs').compareSync(details.password, user.password_hash)).toBe(true);
+    const login = await request(app).post('/api/auth/login')
+      .send({ email: 'DENIZ@demo.test', password: details.password }).expect(200);
+    expect(login.body.user.role).toBe('child');
+    expect(JSON.stringify(created.body)).not.toContain('password');
+    const headers = auth(login.body.token);
+    expect((await request(app).get('/api/children').set(headers)).body).toEqual([created.body]);
+    await request(app).get('/api/children/1/tasks').set(headers).expect(403);
+    await request(app).get(`/api/children/${created.body.id}/documents`).set(headers).expect(403);
+    await request(app).get(`/api/children/${created.body.id}/entries`).set(headers).expect(403);
+    await request(app).post('/api/auth/login').send({ email: 'deniz@demo.test', password: 'wrong' }).expect(401);
+  });
+  test('rejects invalid credentials and duplicate accounts without creating profiles', async () => {
+    const parent = auth(await tokenFor('parent@demo.test'));
+    const users = db.prepare('SELECT count(*) AS n FROM users').get().n;
+    const children = db.prepare('SELECT count(*) AS n FROM children').get().n;
+    for (const patch of [{ email: undefined }, { email: 'invalid' }, { password: undefined },
+      { password: 'short' }, { password: ' '.repeat(8) }, { password: 'ü'.repeat(37) }]) {
+      await request(app).post('/api/children').set(parent).send({ ...details, ...patch }).expect(400);
+    }
+    for (const email of [' PARENT@DEMO.TEST ', 'teacher@demo.test', 'child@demo.test']) {
+      await request(app).post('/api/children').set(parent).send({ ...details, email }).expect(409);
+    }
+    expect(db.prepare('SELECT count(*) AS n FROM users').get().n).toBe(users);
+    expect(db.prepare('SELECT count(*) AS n FROM children').get().n).toBe(children);
+  });
+  test('rolls back the login account if profile insertion fails', async () => {
+    db.exec("CREATE TRIGGER fail_child BEFORE INSERT ON children BEGIN SELECT RAISE(ABORT, 'test failure'); END");
+    await request(app).post('/api/children').set(auth(await tokenFor('parent@demo.test'))).send(details).expect(500);
+    expect(db.prepare("SELECT id FROM users WHERE email = 'deniz@demo.test'").get()).toBeUndefined();
+  });
 });

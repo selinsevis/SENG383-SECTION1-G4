@@ -18,8 +18,12 @@ if (!jwtSecret) {
 
 const db = openDatabase();
 try {
-  db.prepare('SELECT id FROM tasks LIMIT 1').get();
+  db.prepare('SELECT id, child_id, assigned_by, due_date FROM tasks LIMIT 1').get();
   db.prepare('SELECT id FROM users LIMIT 1').get();
+  db.prepare('SELECT file_data FROM documents LIMIT 1').get();
+  for (const table of ['children', 'specialist_links', 'entries', 'events', 'documents', 'ai_summaries', 'ai_summary_sources', 'ai_feedback']) {
+    db.prepare(`SELECT 1 FROM ${table} LIMIT 1`).get();
+  }
 } catch (err) {
   console.error('Database is not ready. Run "npm run seed" before "npm start".');
   db.close();

@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     // Requests to /api go to the Express backend, so the frontend never needs the backend URL.
     proxy: {
-      '/api': 'http://localhost:3000',
+      '/api': process.env.API_TARGET || 'http://localhost:3000',
     },
   },
 });
