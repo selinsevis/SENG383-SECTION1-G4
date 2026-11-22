@@ -122,7 +122,9 @@ The page opens at http://localhost:5173. Requests to `/api` are forwarded to the
 Use a second terminal for the frontend. Open http://localhost:5173, log in with
 one of the demo accounts above (password `Demo1234!`), and you are taken to the
 start page of that role: `/parent`, `/specialist` or `/child`. A user who opens
-another role's page is sent back to their own page. Run `npm run build` in
+another role's page is sent back to their own page. On the parent dashboard,
+the parent can link `psychologist@demo.test` and unlink it again; a specialist's
+start page lists only the children they are linked to. Run `npm run build` in
 `client/` to verify the frontend production build.
 
 ## How we work
