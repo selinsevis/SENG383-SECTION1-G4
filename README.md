@@ -84,6 +84,24 @@ password `Demo1234!`:
 JWT and the user's role. Send the token as `Authorization: Bearer <token>`;
 `GET /api/auth/me` returns the logged-in user.
 
+#### Children and linked specialists (M2)
+
+The seed also creates one synthetic child, **Can Demo**, who belongs to
+`parent@demo.test`, logs in as `child@demo.test`, and is linked to
+`teacher@demo.test`. `psychologist@demo.test` is registered but not linked, so
+the parent can link and unlink it.
+
+| Method | Endpoint | Who |
+|---|---|---|
+| GET | `/api/children` | children the user may see |
+| GET | `/api/children/:childId/specialists` | parent, linked specialist |
+| POST | `/api/children/:childId/specialists` `{ email, specialistType }` | parent |
+| DELETE | `/api/children/:childId/specialists/:specialistId` | parent |
+
+A specialist who is not linked to a child gets `403` for every request about
+that child, even with a valid token. Other modules protect their child routes
+with the same `canAccessChild` middleware (`server/src/children.js`).
+
 To set your own JWT secret, copy `server/.env.example` to `server/.env` and fill
 in `JWT_SECRET`. Without it, the backend uses a development-only secret and
 prints a warning.
