@@ -20,7 +20,7 @@ afterEach(() => {
 test('seed persists a sample task and the API returns the frontend contract', async () => {
   db.close();
   db = openDatabase(path.join(directory, 'data', 'test.sqlite'));
-  const res = await request(createApp(db)).get('/api/tasks').expect(200)
+  const res = await request(createApp(db, { jwtSecret: 'test-secret' })).get('/api/tasks').expect(200)
     .expect('Content-Type', /json/);
   expect(res.body).toEqual([{ id: 1, title: 'Read for 20 minutes', status: 'open' }]);
 });
@@ -37,22 +37,22 @@ test('repeated seed preserves existing tasks and does not duplicate the sample',
 
 test('API reads current database contents, including the empty state', async () => {
   db.prepare('DELETE FROM tasks').run();
-  await request(createApp(db)).get('/api/tasks').expect(200, []);
+  await request(createApp(db, { jwtSecret: 'test-secret' })).get('/api/tasks').expect(200, []);
   db.prepare('INSERT INTO tasks VALUES (?, ?, ?)').run(7, 'Another synthetic task', 'done');
-  await request(createApp(db)).get('/api/tasks').expect(200, [
+  await request(createApp(db, { jwtSecret: 'test-secret' })).get('/api/tasks').expect(200, [
     { id: 7, title: 'Another synthetic task', status: 'done' },
   ]);
 });
 
 test('unknown routes return JSON 404', async () => {
-  await request(createApp(db)).get('/api/missing').expect(404, { error: 'Not found' });
+  await request(createApp(db, { jwtSecret: 'test-secret' })).get('/api/missing').expect(404, { error: 'Not found' });
 });
 
 test('database failures return a generic JSON error without leaking SQL', async () => {
   db.exec('DROP TABLE tasks');
   const log = jest.spyOn(console, 'error').mockImplementation(() => {});
   try {
-    await request(createApp(db)).get('/api/tasks')
+    await request(createApp(db, { jwtSecret: 'test-secret' })).get('/api/tasks')
       .expect(500, { error: 'Internal server error' });
   } finally {
     log.mockRestore();

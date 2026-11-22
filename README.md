@@ -64,9 +64,29 @@ Check http://localhost:3000/api/tasks (or run `curl http://localhost:3000/api/ta
 [{ "id": 1, "title": "Read for 20 minutes", "status": "open" }]
 ```
 
-This v0.0 endpoint serves synthetic demo data without login; JWT and access
-control are planned for M1. If startup reports that the database is not ready,
+This v0.0 endpoint serves synthetic demo data without login; it is replaced by
+the protected task API in M4. If startup reports that the database is not ready,
 run `npm run seed`. Stop the backend with Ctrl+C.
+
+#### Login (M1)
+
+The seed script also creates synthetic demo accounts. All of them use the
+password `Demo1234!`:
+
+| Email | Role |
+|---|---|
+| `parent@demo.test` | parent |
+| `teacher@demo.test` | specialist (teacher) |
+| `psychologist@demo.test` | specialist (psychologist) |
+| `child@demo.test` | child |
+
+`POST /api/auth/login` with `{ "email": "...", "password": "..." }` returns a
+JWT and the user's role. Send the token as `Authorization: Bearer <token>`;
+`GET /api/auth/me` returns the logged-in user.
+
+To set your own JWT secret, copy `server/.env.example` to `server/.env` and fill
+in `JWT_SECRET`. Without it, the backend uses a development-only secret and
+prints a warning.
 
 Run the backend database and API tests with `cd server && npm test` from the
 repository root. Tests use temporary databases, leaving development data intact.
