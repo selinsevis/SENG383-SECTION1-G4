@@ -101,10 +101,11 @@ npm run dev
 
 The page opens at http://localhost:5173. Requests to `/api` are forwarded to the backend at http://localhost:3000, so start the backend first.
 
-Use a second terminal for the frontend. The page must show
-**Read for 20 minutes – open** with no loading error. This verifies the complete
-React → Express → SQLite walking skeleton. Run `npm run build` in `client/` to
-verify the frontend production build.
+Use a second terminal for the frontend. Open http://localhost:5173, log in with
+one of the demo accounts above (password `Demo1234!`), and you are taken to the
+start page of that role: `/parent`, `/specialist` or `/child`. A user who opens
+another role's page is sent back to their own page. Run `npm run build` in
+`client/` to verify the frontend production build.
 
 ## How we work
 
