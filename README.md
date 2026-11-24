@@ -1,50 +1,28 @@
 # SENG383-SECTION1-G4
 
-**AI-Assisted Child Development Platform** – SENG 383 Software Project III term project (Fall 2026), Çankaya University.
+AI-Assisted Child Development Platform · SENG 383 Software Project III · Fall 2026
 
-A web-based decision support platform where parents and specialists share one weekly schedule, task list and record of observations. An AI component summarizes the week's records for each reader according to their role. The AI only supports decisions; it never makes them.
+Parents and linked specialists share a child's tasks, weekly schedule, observations
+and documents. Weekly statistics use recorded tasks. The role-specific AI summary
+currently uses a deterministic offline mock and retains its source records.
+The application is local and uses synthetic data only.
 
 ## Team
 
-| Name | GitHub | Role |
+| Name | GitHub | Responsibilities |
 |---|---|---|
-| Selin Nur Seviş | [@selinsevis](https://github.com/selinsevis) | Team lead & contact person, full-stack developer |
-| Göktuğ Eskigöçmen | [@gokenomi](https://github.com/gokenomi) | Full-stack developer, CI & testing |
+| Selin Nur Seviş | [selinsevis](https://github.com/selinsevis) | M1, M2, M5, M8; Jira and PMP |
+| Göktuğ Eskigöçmen | [gokenomi](https://github.com/gokenomi) | M3, M4, M6, M7; CI and testing |
 
-**Jira board:** https://student-team-w5ttem13.atlassian.net/jira/software/projects/G4/boards/1 (project key `G4`)
-
-## Documents
-
-| Document | File |
-|---|---|
-| Project Management Plan | [docs/PMP.md](docs/PMP.md) |
-| Software Requirements Specification | [docs/SRS.md](docs/SRS.md) |
-| Software Design Document | [docs/SDD.md](docs/SDD.md) |
-| Weekly meeting notes | [docs/meetings/](docs/meetings/) |
-
-## Repository structure
-
-```
-client/          React (Vite) frontend
-server/          Node.js + Express backend with SQLite
-docs/            PMP, SRS, SDD
-docs/img/        Screenshots and diagrams used in the documents
-docs/meetings/   Weekly meeting notes (weekNN.md)
-```
-
-## Technology
-
-React (Vite) · Node.js + Express · SQLite · JWT authentication · Jest + Supertest, Vitest, Playwright · GitHub Actions · Gemini API (with a mock mode for tests and CI)
-
-Only synthetic data created by a seed script is used. The application runs locally; there is no cloud deployment.
+[Jira board](https://student-team-w5ttem13.atlassian.net/jira/software/projects/G4/boards/1)
 
 ## Running locally
 
-Requirements: Node.js 20 or later.
+Use Node.js **22.12 or newer** (22 LTS recommended) and npm. The frontend tooling
+also supports Node 20.19+. Each package has its own package.json; the repository
+root has none.
 
-### Backend (Express + SQLite)
-
-From the repository root, run:
+Terminal 1, from the repository root:
 
 ```bash
 cd server
@@ -53,84 +31,155 @@ npm run seed
 npm start
 ```
 
-The backend runs at http://localhost:3000. The seed script creates
-`server/data/development.sqlite` and inserts a synthetic sample task. It can be
-run again without duplicating the sample or resetting existing tasks. Database
-files are ignored by Git. Set `DB_PATH` to use a different SQLite file if needed.
-
-Check http://localhost:3000/api/tasks (or run `curl http://localhost:3000/api/tasks`):
-
-```json
-[{ "id": 1, "title": "Read for 20 minutes", "status": "open" }]
-```
-
-This v0.0 endpoint serves synthetic demo data without login; it is replaced by
-the protected task API in M4. If startup reports that the database is not ready,
-run `npm run seed`. Stop the backend with Ctrl+C.
-
-#### Login (M1)
-
-The seed script also creates synthetic demo accounts. All of them use the
-password `Demo1234!`:
-
-| Email | Role |
-|---|---|
-| `parent@demo.test` | parent |
-| `teacher@demo.test` | specialist (teacher) |
-| `psychologist@demo.test` | specialist (psychologist) |
-| `child@demo.test` | child |
-
-`POST /api/auth/login` with `{ "email": "...", "password": "..." }` returns a
-JWT and the user's role. Send the token as `Authorization: Bearer <token>`;
-`GET /api/auth/me` returns the logged-in user.
-
-#### Children and linked specialists (M2)
-
-The seed also creates one synthetic child, **Can Demo**, who belongs to
-`parent@demo.test`, logs in as `child@demo.test`, and is linked to
-`teacher@demo.test`. `psychologist@demo.test` is registered but not linked, so
-the parent can link and unlink it.
-
-| Method | Endpoint | Who |
-|---|---|---|
-| GET | `/api/children` | children the user may see |
-| GET | `/api/children/:childId/specialists` | parent, linked specialist |
-| POST | `/api/children/:childId/specialists` `{ email, specialistType }` | parent |
-| DELETE | `/api/children/:childId/specialists/:specialistId` | parent |
-
-A specialist who is not linked to a child gets `403` for every request about
-that child, even with a valid token. Other modules protect their child routes
-with the same `canAccessChild` middleware (`server/src/children.js`).
-
-To set your own JWT secret, copy `server/.env.example` to `server/.env` and fill
-in `JWT_SECRET`. Without it, the backend uses a development-only secret and
-prints a warning.
-
-Run the backend database and API tests with `cd server && npm test` from the
-repository root. Tests use temporary databases, leaving development data intact.
-
-### Frontend (React + Vite)
+Terminal 2, from the repository root:
 
 ```bash
 cd client
-npm install
+npm ci
 npm run dev
 ```
 
-The page opens at http://localhost:5173. Requests to `/api` are forwarded to the backend at http://localhost:3000, so start the backend first.
+Open **http://localhost:5173**. The backend listens on localhost:3000; Vite proxies
+`/api` to it. Ctrl+C stops each server. No deployment or Docker is required.
 
-Use a second terminal for the frontend. Open http://localhost:5173, log in with
-one of the demo accounts above (password `Demo1234!`), and you are taken to the
-start page of that role: `/parent`, `/specialist` or `/child`. A user who opens
-another role's page is sent back to their own page. On the parent dashboard,
-the parent can link `psychologist@demo.test` and unlink it again; a specialist's
-start page lists only the children they are linked to. Run `npm run build` in
-`client/` to verify the frontend production build.
+The seed upgrades the SQLite schema without deleting existing records. Old
+skeleton tasks retain their IDs/title/status and gain the demo child/assigner and
+a due date. The seed does not reset passwords, duplicate tasks, erase observations,
+or restore removed specialist links. SQLite files and uploads are ignored by Git.
+Run the seed after a schema update; startup checks will tell you if it is needed.
 
-## How we work
+Copy `server/.env.example` to `server/.env` to set `JWT_SECRET` and optionally
+`DB_PATH`. Without a secret, a development-only default is used. `AI_MODE=mock`
+is the only implemented provider mode. Non-mock configuration returns 503;
+there is no real Gemini/GitHub Models call or API-key requirement in this version.
 
-- Every task is a Jira issue under one of the 14 epics (PMP-1…PMP-6, M1…M8).
-- Branch names and commit messages start with the Jira key, e.g. branch `G4-22-react-skeleton`, commit `G4-22 Add React (Vite) walking skeleton page`.
-- No direct pushes to `main`: every change goes through a pull request reviewed by the other member.
-- A Jira issue moves to Done only after its pull request is merged.
-- Releases are marked with Git tags: `v0.0` (walking skeleton), `v0.1` (M1–M4), `v0.2` (M1–M8), `v1.0` (final).
+## Demo accounts
+
+| Email | Password | Access |
+|---|---|---|
+| parent@demo.test | Demo1234! | Can Demo's parent |
+| teacher@demo.test | Demo1234! | Linked teacher |
+| psychologist@demo.test | Demo1234! | Registered, initially unlinked |
+| child@demo.test | Demo1234! | Can Demo's child account |
+| admin@admin.com | admin | Local operations and role preview |
+
+Passwords are bcrypt hashes. These are synthetic local demo accounts. New child
+profiles and login accounts are created together by their parent with first/last
+name, a unique email and a password (at least 8 characters, at most 72 UTF-8 bytes).
+Passwords are hashed; the child can log in immediately. New profiles have no linked specialists. Use the specialist-access tab to link one.
+
+Admin can inspect users/health and manage specialist links across children.
+The top role-test bar previews the real seeded parent, teacher or child permissions
+using the admin token. Preview is remembered per tab; logout clears it. Ordinary
+users cannot activate this feature, and a preview does not inherit admin access.
+
+## Screens and behavior
+
+Select a child at the top. The global year/week toolbar has been removed.
+Parent/specialist workspaces have Overview, Calendar and Tasks (combined),
+Evaluations, Documents and AI Summary. Week filters live inside the sections that
+need them. The child has the combined Calendar and Tasks screen. The monthly leaf
+calendar displays events inside day cells and task completion counts; choose a
+day to filter the event/task details below, or show the whole month.
+
+- **M3 Calendar:** parent/linked specialist adds title, start and optional end;
+  start time determines the day. The monthly calendar accepts year/month and
+  still supports ISO weekly API filters for reports.
+- **M4 Tasks:** title, description, development area and due date; only the child
+  owning a task can mark it done or undo it. Undo sets status to open and clears
+  completed_at. The assigner and statistics immediately reflect the current status.
+  The task subtitle below the calendar lists the selected day or displayed month.
+- **M5 Evaluations:** one note per author/child/ISO week. Currently linked authors
+  can edit their notes; edits are marked. Parents and linked specialists read them;
+  children cannot. A parent can add child profiles with first/last name.
+- **M6 Documents:** upload/list/view/download PDF, PNG or JPEG up to 5 MB. Upload
+  checks MIME plus signature. Both file bytes (BLOB) and metadata live in SQLite.
+  No new file is written to server/uploads. Existing legacy files migrate during
+  seed: bytes are committed and verified before the old disk copy is removed.
+  Viewing/downloading still repeats authentication and child access checks.
+- **M7 Statistics:** completed/total and percentage overall and by language,
+  motor, social, cognitive and self-care area. Zero tasks gives 0%, not NaN.
+- **M8 Mock AI:** parent/specialist-specific deterministic templates summarize
+  the selected week's permitted tasks, notes and events. Saved summaries have
+  `AI-generated` and `mock` labels, source snapshots, and helpful/incorrect feedback.
+  Opening a source repeats the child-access check. Empty weeks invent no findings.
+  PDF/image text extraction and real AI inference are not implemented.
+
+Unlinking a specialist immediately revokes access even if their JWT is still valid,
+including to previously assigned tasks, documents and saved summary sources.
+
+## API
+
+All routes except login require a bearer JWT. Child routes reuse the existing
+`canAccessChild` middleware. Admin preview adds `X-Preview-Role` and is validated
+against the current database admin role on every request.
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | /api/auth/login | Email/password login |
+| GET | /api/auth/me | Current effective user and optional admin actor |
+| GET / POST | /api/children | Accessible children / parent adds profile |
+| GET / POST | /api/children/:childId/specialists | List/link specialists |
+| DELETE | /api/children/:childId/specialists/:specialistId | Unlink |
+| GET / POST | /api/children/:childId/tasks | List/assign tasks |
+| PATCH | /api/tasks/:taskId/complete | Child completes own task |
+| PATCH | /api/tasks/:taskId/undo | Child reopens own task, clearing completion time |
+| GET | /api/tasks/assigned-by-me | Currently accessible tasks assigned by caller |
+| GET / POST | /api/children/:childId/events | Weekly events / add event |
+| GET / POST | /api/children/:childId/entries | Weekly evaluations / specialist writes |
+| PUT | /api/entries/:entryId | Author edits while still linked |
+| GET / POST | /api/children/:childId/documents | List/upload, multipart field `file` |
+| GET | /api/documents/:docId/view | Protected inline file |
+| GET | /api/documents/:docId/download | Protected download |
+| GET | /api/children/:childId/stats | Weekly statistics |
+| GET / POST | /api/children/:childId/summary | Latest saved / generate mock summary |
+| GET | /api/children/:childId/summaries/:id/sources/:sourceId | Saved source snapshot |
+| POST | /api/children/:childId/summary/:id/feedback | helpful or incorrect |
+| GET | /api/admin/overview | Operations health/counts |
+| GET | /api/admin/users | Directory without password hashes |
+
+The calendar accepts `year=2026&month=11`. Weekly reports accept
+`year=2026&week=47`; events/statistics also accept a Monday
+`weekStart=YYYY-MM-DD`. Summary POST accepts `{ year, week }`. The previous open
+`GET /api/tasks` skeleton endpoint has been removed.
+
+## Tests and CI
+
+```bash
+cd server
+npm test
+npm run test:coverage
+```
+
+```bash
+cd client
+npm test
+npm run build
+```
+
+```bash
+cd e2e
+npm ci
+npx playwright install chromium
+npm test
+```
+
+On Linux, Playwright may require `npx playwright install --with-deps chromium`.
+E2E uses dedicated ports 3100/5174, a temporary SQLite database (including document BLOBs); it does not reuse your running app or development data. Those ports
+must be free. `AI_MODE=mock` is explicit in the E2E environment.
+
+GitHub Actions installs dependencies, seeds, runs Jest with a minimum **60% branch
+coverage across all server source files**, runs Vitest, builds the client and runs
+Playwright. Traces/screenshots/reports are uploaded on failure. The workflow runs
+on PRs and pushes to main. Local passing tests do not themselves prove a remote
+GitHub Actions run has succeeded.
+
+## Documents
+
+- [Implementation and validation report](docs/IMPLEMENTATION_REPORT_2026-11-15.md)
+- [SRS](docs/SRS.md), [SDD](docs/SDD.md), [PMP](docs/PMP.md)
+- [Weekly meeting notes](docs/meetings/)
+
+Changes go through reviewed PRs; Jira tasks move to Done after merge. Release tags
+remain v0.0, v0.1, v0.2 and v1.0. This local implementation has not been merged,
+tagged or deployed by this work.

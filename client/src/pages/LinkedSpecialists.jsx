@@ -12,7 +12,7 @@ const typeLabel = (value) => (TYPES.find(([v]) => v === value) || [value, value]
 
 // M2 for the parent: link a specialist by email (FR-M2-01, FR-M2-02),
 // see the linked specialists (FR-M2-03) and unlink with a confirmation step (FR-M2-04).
-export default function LinkedSpecialists({ child }) {
+export default function LinkedSpecialists({ child, onChange }) {
   const [specialists, setSpecialists] = useState([]);
   const [email, setEmail] = useState('');
   const [type, setType] = useState('teacher');
@@ -35,6 +35,7 @@ export default function LinkedSpecialists({ child }) {
       setSpecialists(updated);
       setMessage(`${email.trim()} is now linked to ${child.name}.`);
       setEmail('');
+      onChange?.();
     } catch (err) {
       setError(err.message); // e.g. "No registered specialist with this email"
     }
@@ -47,6 +48,7 @@ export default function LinkedSpecialists({ child }) {
       await apiFetch(`${base}/${specialist.id}`, { method: 'DELETE' });
       setSpecialists((list) => list.filter((s) => s.id !== specialist.id));
       setMessage(`${specialist.name} was unlinked and can no longer see ${child.name}'s data.`);
+      onChange?.();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -65,7 +67,7 @@ export default function LinkedSpecialists({ child }) {
         </label>
         <label>
           Type
-          <select value={type} onChange={(e) => setType(e.target.value)}>
+          <select aria-label="Type" value={type} onChange={(e) => setType(e.target.value)}>
             {TYPES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </label>

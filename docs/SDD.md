@@ -2,7 +2,7 @@
 
 **Team name:** G4 (SENG383-SECTION1-G4)  
 **Version:** ☒ First version (Week 6) ☐ Final (Week 10)  
-**Last updated:** 2026-11-07
+**Last updated:** 2026-11-15
 
 ---
 
@@ -25,7 +25,7 @@ In the backend, each request goes through the same steps: the route, a middlewar
 
 | Layer | Technology |
 |---|---|
-| Frontend | React (Vite), React Router |
+| Frontend | React (Vite 7), React Router 7 |
 | Backend | Node.js, Express, jsonwebtoken, bcrypt, multer |
 | Database | SQLite, synthetic data from a seed script |
 | AI | Gemini API, through one backend module with a mock mode |
@@ -145,6 +145,17 @@ erDiagram
 
 `role` is parent, specialist or child. `status` is open or done. A week starts on Monday.
 
+Child creation accepts first name, last name, email and password and stores their normalized combined
+value in the existing `children.name` column. `parent_id` comes from the session;
+`user_id` references a new child-role user created in the same transaction. Email is normalized and unique across all accounts; passwords are bcrypt hashes (8 characters minimum, 72 UTF-8 bytes maximum).
+
+Weekly evaluations reuse the planned `ENTRIES` entity. `entry_date` is the Monday
+of the chosen ISO week-year, with a unique constraint on `(child_id, specialist_id,
+entry_date)`. The author may edit only while still linked to the child. The API
+sets `is_edited` on update and also records creation/update timestamps. GET filters
+with an inclusive Monday and exclusive next Monday, including cross-year weeks.
+Human specialist evaluations are separate from the planned M8 AI summary.
+
 ---
 
 ## 4. API / Interfaces
@@ -155,22 +166,23 @@ All endpoints except login need a JWT in the `Authorization` header.
 |---|---|---|---|
 | POST | `/api/auth/login` | Log in, returns JWT and role | M1 |
 | GET | `/api/children` | Children the user can see | M1, M2 |
+| POST | `/api/children` | Parent creates a profile and login with `{ firstName, lastName, email, password }` | M2 extension |
 | GET | `/api/children/:id/specialists` | List linked specialists | M2 |
 | POST | `/api/children/:id/specialists` | Link a specialist by email | M2 |
 | DELETE | `/api/children/:id/specialists/:specialistId` | Unlink a specialist | M2 |
-| GET | `/api/children/:id/events?week=` | Events of a week | M3 |
+| GET | `/api/children/:id/events?year=2026&week=47` | Events of a week | M3 |
 | POST | `/api/children/:id/events` | Add an event | M3 |
 | GET | `/api/children/:id/tasks` | Tasks of the child | M4 |
 | POST | `/api/children/:id/tasks` | Assign a task | M4 |
 | PATCH | `/api/tasks/:taskId/complete` | Child marks a task as done | M4 |
 | GET | `/api/tasks/assigned-by-me` | Tasks I assigned, with status | M4 |
-| GET | `/api/children/:id/entries` | List entries | M5 |
-| POST | `/api/children/:id/entries` | Add an entry | M5 |
+| GET | `/api/children/:id/entries?year=2026&week=46` | Week range and entries, parent or linked specialist | M5 |
+| POST | `/api/children/:id/entries` | Specialist adds `{ year, week, content }` | M5 |
 | PUT | `/api/entries/:entryId` | Edit an entry (marked as edited) | M5 |
 | GET | `/api/children/:id/documents` | List documents | M6 |
 | POST | `/api/children/:id/documents` | Upload a document | M6 |
 | GET | `/api/documents/:docId/download` | Download a document | M6 |
-| GET | `/api/children/:id/stats?week=` | Weekly completion rate | M7 |
+| GET | `/api/children/:id/stats?year=2026&week=47` | Weekly completion rate | M7 |
 | POST | `/api/children/:id/summary` | Create the weekly AI summary | M8 |
 
 Errors: 400 for invalid input, 401 for a missing or wrong token, 403 for no permission, 404 if not found.
@@ -285,3 +297,58 @@ Low-fidelity wireframes of the main screens. They show only the required functio
 |---|---|---|
 | 2026-11-01 | First version | Selin Nur Seviş |
 | 2026-11-07 | Added wireframes of the main screens (Section 6) | Selin Nur Seviş |
+
+
+## Implementation update 15 November 2026
+
+M3/M4/M6/M7 are now connected to the React workspaces. The open skeleton task
+endpoint was removed. All child resources go through authenticate and
+canAccessChild. The stand-alone task completion, evaluation edit and document
+read routes resolve their child before enforcing the same ownership/link rules.
+
+M8 currently implements only the deterministic mock provider in `server/src/ai.js`.
+It uses separate parent/specialist templates. `POST /api/children/:id/summary`
+collects selected-week tasks, observations and events and persists the summary plus
+source snapshots in a transaction. Source reads repeat the current access check.
+GET returns the latest own-role/own-user summary for the selected week; feedback
+is stored in `ai_feedback`. Child accounts are denied. Unsupported real-provider
+configuration fails explicitly with 503 rather than silently falling back to mock.
+Actual Gemini or GitHub Models integration remains a separate follow-up.
+
+Tasks gained child_id, assigned_by, description, area, due_date and completed_at
+through additive migration, preserving the synthetic skeleton records. New tables
+are events, documents, ai_summaries, ai_summary_sources and ai_feedback. Documents
+store a generated file name, original display name, MIME type, byte count, uploader
+and timestamp. Files are private and are read through authorized routes.
+
+For the requested local operations extension, users also support role admin.
+The admin role-test bar keeps the actor's token but resolves a fixed demo account
+and applies that account's actual API permissions on each preview request. This
+is a development extension beyond the assignment's original three roles.
+
+The UI uses a child selector, shared ISO week/year selector and module tabs.
+`WorkspacePanels.jsx` connects tasks, events, statistics, documents and AI summaries.
+`WeeklyEvaluations.jsx` keeps human observations distinct from the mock AI summary.
+
+Jest/Supertest cover API behavior and permission failures; Vitest checks frontend
+ISO week handling. Playwright starts isolated API/frontend instances and validates
+the three SRS critical flows plus calendar, files, evaluations and role preview.
+See the implementation report for exact results and remaining limitations.
+
+
+## Calendar, task undo and document storage update
+
+The top child-profile toolbar no longer contains global year/week controls.
+Calendar and Tasks share one screen. The calendar requests year/month, displays
+a Monday-first 42-cell month grid with event labels and task counts, and filters
+the task subtitle by selected day or displayed month. Week filters are local to
+evaluations, statistics and AI summaries.
+
+PATCH /api/tasks/:taskId/undo uses the same child-ownership check as complete.
+It changes status to open and clears completed_at; repeated undo is safe.
+
+Documents now store their bytes in documents.file_data (SQLite BLOB). The former
+stored_name column is retained as a compatibility key, not as a new disk path.
+No new uploads folder/static file is created. Protected routes fetch bytes only
+after authorization. Legacy seed migration commits and verifies exact bytes before
+removing old disk files; missing legacy sources are never replaced with empty data.
