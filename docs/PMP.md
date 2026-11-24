@@ -111,14 +111,35 @@ M1 login page and role routing, M2, M3, M4, the first end-to-end test running in
 
 ## PMP-4. Progress Review: v0.2
 
-**Jira board screenshot:**  
+**Date of review:** 2026-11-24 (Week 9; mid-term evaluation of Week 8)
 
-| Epic | Planned for this point | Status (Done / In progress / Not started) |
+**Jira board screenshot:**
+
+![Jira board after the mid-term](img/pmp4-jira-board.png)
+
+| Epic | Planned for the mid-term | Status (Done / In progress / Not started) |
 |---|---|---|
-| | | |
-| | | |
+| PMP-3 | Progress review at the end of Week 7 | Done (merged late, on 22 Nov) |
+| PMP-4 | Mid-term progress review | Done (this section) |
+| M1 | Login API with JWT (G4-23), login page and role routing (G4-24) | Done (merged 22 Nov) |
+| M2 | Link/unlink API with access check (G4-25), linked specialists page (G4-26) | Done (merged 22 Nov) |
+| M3 | Events API (G4-27), weekly schedule view (G4-33) | In progress: events can be added and are shown in a monthly calendar (merged 24 Nov); the weekly view is not finished |
+| M4 | Tasks API (G4-34), assign task form and child task list (G4-35) | Done (merged 24 Nov) |
+| M5–M8 | Planned for Sprint 3 | In progress: first versions of entries, documents, statistics and the mock AI summary are on main |
+
+**Mid-term demo:** given live in class on 16 November from the feature branch, because the pull requests were not merged yet.
+
+**Release v0.1:** tagged on main on 24 November, after PR #14 (M3, M4 and the end-to-end tests) was merged. CI installs, seeds, runs the backend and frontend tests and the Playwright end-to-end tests on every pull request.
+
+**End-to-end tests in CI:** login and role routing; Flow 1 (link and unlink a specialist, the unlinked specialist's token is rejected); Flow 2 (specialist assigns a task, the child completes it, the specialist sees it as done); Flow 3 (mock AI summary with sources).
 
 **Changes to the plan (if any):**
+
+- Pull requests waited for review and merging, so PMP-3 and M1–M2 were merged on 22 November and M3–M4 with v0.1 on 24 November, after the Week 8 deadline. From Sprint 3 on, open pull requests are reviewed and merged within two days.
+- M3's weekly schedule view moves to Sprint 3. The monthly calendar stays.
+- The end-to-end tests for the three critical flows were finished earlier than planned (Sprint 2 instead of Sprint 4), so the Week 10 requirement is already covered.
+- M3, M4 and the first versions of M5–M8 arrived in one large commit (PR #14). From Sprint 3 on, work is committed per Jira task so that each commit and pull request matches one task.
+- Sprint 2 was closed on 24 November; unfinished tasks moved to Sprint 3.
 
 ---
 
